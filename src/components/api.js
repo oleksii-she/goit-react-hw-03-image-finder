@@ -1,7 +1,6 @@
-import axios from 'axios';
+import axios, { Axios } from 'axios';
 
 export const pixabayApi = async (searchValue, page) => {
-  console.log(page);
   const responce = await axios.get('https://pixabay.com/api/', {
     params: {
       key: '29401680-f540f076c98bade948db8a4a4',

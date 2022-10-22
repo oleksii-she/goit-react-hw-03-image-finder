@@ -4,8 +4,9 @@ import { SearchBar } from './SearchBar/SearchBar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Modal } from './modal/modal';
 import { pixabayApi } from './api';
-import { ThreeDots } from 'react-loader-spinner';
+import { Loader } from './Loader/Loader';
 import { Button } from './loadMore/button';
+import { ErrorUser } from './Error/ErrorUser';
 import css from './app.module.css';
 export class App extends Component {
   state = {
@@ -14,16 +15,18 @@ export class App extends Component {
     modalImgSrc: '',
     isLoading: false,
     showModal: false,
-    error: '',
+
     page: 1,
-    status: '',
+    status: 'idle',
   };
 
-  // async componentDidMount() {
-
-  // }
-
   async componentDidUpdate(prevProps, prevState) {
+    if (this.state.page > 1) {
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
     if (
       prevState.searchValue !== this.state.searchValue ||
       prevState.page !== this.state.page
@@ -39,13 +42,13 @@ export class App extends Component {
           this.setState(prevState => {
             return {
               array: [...prevState.array, ...arrayObj],
+              status: 'resolved',
             };
           });
         }
       } catch (error) {
         this.setState({
-          error:
-            'Sorry, we are currently undergoing technical work, try to reload the page or use our service later. Thank you for being with us!',
+          status: 'rejected',
         });
       } finally {
         this.setState({ isLoading: false });
@@ -76,39 +79,45 @@ export class App extends Component {
   loadMore = () => {
     this.setState(prevState => ({
       page: prevState.page + 1,
+      status: 'pending',
     }));
   };
 
   render() {
-    const { searchValue, array, isLoading, showModal, modalImgSrc } =
+    const { searchValue, array, isLoading, showModal, modalImgSrc, status } =
       this.state;
-
-    return (
-      <div className={css.App}>
-        <SearchBar onSubmit={this.hendlerFormSubmit} />
-        {searchValue && (
-          <ImageGallery data={array} clickModal={this.onOpenModal} />
-        )}
-        {searchValue && <Button loadMore={this.loadMore} />}
-        {showModal && (
-          <Modal onClose={this.onCloseModal}>
-            <img src={modalImgSrc} alt="" />
-          </Modal>
-        )}
-
-        <ThreeDots
-          height="80"
-          width="80"
-          radius="9"
-          color="#3f51b5"
-          ariaLabel="three-dots-loading"
-          wrapperStyle={{}}
-          wrapperClassName=""
-          visible={isLoading}
-        />
-      </div>
-    );
+    console.log(status);
+    if (status === 'idle') {
+      return <SearchBar onSubmit={this.hendlerFormSubmit} />;
+    }
+    if (status === 'pending') {
+      <Loader visible={isLoading} />;
+    }
+    if (status === 'rejected') {
+      return (
+        <>
+          <SearchBar onSubmit={this.hendlerFormSubmit} />
+          <ErrorUser />
+        </>
+      );
+    }
+    if (status === 'resolved') {
+      return (
+        <div className={css.App}>
+          <SearchBar onSubmit={this.hendlerFormSubmit} />
+          {searchValue && (
+            <ImageGallery data={array} clickModal={this.onOpenModal} />
+          )}
+          {searchValue && <Button loadMore={this.loadMore} />}
+          {showModal && (
+            <Modal onClose={this.onCloseModal}>
+              <img src={modalImgSrc} alt="" />
+            </Modal>
+          )}
+        </div>
+      );
+    }
   }
 }
 
-// pending idle' rejected resolved
+// resolved pending idle' rejected

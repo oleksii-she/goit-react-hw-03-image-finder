@@ -1,0 +1,15 @@
+.error_box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.error_title {
+  max-width: 450px;
+  color: red;
+}
+
+.error_img {
+  width: 450px;
+}
