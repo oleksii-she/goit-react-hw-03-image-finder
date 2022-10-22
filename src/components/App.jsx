@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 
-import { SearchBar } from './form/formSearch';
+import { SearchBar } from './SearchBar/SearchBar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Modal } from './modal/modal';
 import { pixabayApi } from './api';
-import { Watch } from 'react-loader-spinner';
-
+import { ThreeDots } from 'react-loader-spinner';
+import { Button } from './loadMore/button';
+import css from './app.module.css';
 export class App extends Component {
   state = {
     array: [],
@@ -15,6 +16,7 @@ export class App extends Component {
     showModal: false,
     error: '',
     page: 1,
+    status: '',
   };
 
   // async componentDidMount() {
@@ -78,29 +80,28 @@ export class App extends Component {
   };
 
   render() {
-    const { searchValue, array, isLoading, showModal, modalImgSrc } =
+    const { searchValue, array, isLoading, showModal, modalImgSrc, page } =
       this.state;
 
     return (
-      <div>
+      <div className={css.App}>
         <SearchBar onSubmit={this.hendlerFormSubmit} />
         {searchValue && (
           <ImageGallery data={array} clickModal={this.onOpenModal} />
         )}
-        {<button onClick={this.loadMore}>Load more</button>}
-
+        {searchValue && <Button loadMore={this.loadMore} />}
         {showModal && (
           <Modal onClose={this.onCloseModal}>
             <img src={modalImgSrc} alt="" />
           </Modal>
         )}
 
-        <Watch
+        <ThreeDots
           height="80"
           width="80"
-          radius="48"
-          color="#4fa94d"
-          ariaLabel="watch-loading"
+          radius="9"
+          color="#3f51b5"
+          ariaLabel="three-dots-loading"
           wrapperStyle={{}}
           wrapperClassName=""
           visible={isLoading}
@@ -109,3 +110,5 @@ export class App extends Component {
     );
   }
 }
+
+// pending idle' rejected resolved

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-// import { Formik, Form } from 'formik';
+import { FaSearchMinus } from 'react-icons/fa';
+import css from './SearchBar.module.css';
 
 export class SearchBar extends Component {
   state = {
@@ -27,17 +28,17 @@ export class SearchBar extends Component {
     const { value } = this.state;
 
     return (
-      <header className="searchbar">
-        <form class="form" onSubmit={this.handlerSubmitForm}>
-          <button type="submit" class="button">
-            <span class="button-label">Search</span>
+      <header className={css.Searchbar}>
+        <form className={css.search_form} onSubmit={this.handlerSubmitForm}>
+          <button type="submit" className={css.searchForm_button}>
+            <FaSearchMinus />
           </button>
 
           <input
-            class="input"
+            className={css.SearchForm_input}
             type="text"
-            autocomplete="off"
-            autofocus
+            autoComplete="off"
+            autoFocus
             placeholder="Search images and photos"
             value={value}
             onChange={this.handlerInputName}
