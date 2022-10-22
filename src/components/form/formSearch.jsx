@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 export class SearchBar extends Component {
   state = {
     value: '',
+    page: 1,
   };
 
   handlerInputName = e => {
@@ -15,7 +16,7 @@ export class SearchBar extends Component {
     if (this.state.value === '') {
       console.log('none value');
     }
-    this.props.onSubmit(this.state.value);
+    this.props.onSubmit(this.state);
     this.reset();
   };
 
