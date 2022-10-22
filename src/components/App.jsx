@@ -78,9 +78,9 @@ export class App extends Component {
   };
 
   render() {
-    const { searchValue, array, isLoading, showModal, modalImgSrc, page } =
+    const { searchValue, array, isLoading, showModal, modalImgSrc } =
       this.state;
-    console.log(array);
+
     return (
       <div>
         <SearchBar onSubmit={this.hendlerFormSubmit} />

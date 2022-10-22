@@ -1,4 +1,4 @@
-import axios, { Axios } from 'axios';
+import axios from 'axios';
 
 export const pixabayApi = async (searchValue, page) => {
   console.log(page);
