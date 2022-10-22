@@ -1,13 +1,43 @@
 import React, { Component } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
+
+import { pixabayApi } from './api';
 
 import { SearchBar } from './SearchBar/SearchBar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Modal } from './modal/modal';
-import { pixabayApi } from './api';
 import { Loader } from './Loader/Loader';
 import { Button } from './loadMore/button';
 import { ErrorUser } from './Error/ErrorUser';
+
 import css from './app.module.css';
+
+/// notification
+// const notifyE = () =>
+//   toast('Hello World', {
+//     duration: 4000,
+//     position: 'top-center',
+
+//     // Styling
+//     style: {},
+//     className: '',
+
+//     // Custom Icon
+//     icon: '👏',
+
+//     // Change colors of success/error/loading icon
+//     iconTheme: {
+//       primary: '#000',
+//       secondary: '#fff',
+//     },
+
+//     // Aria
+//     ariaProps: {
+//       role: 'status',
+//       'aria-live': 'polite',
+//     },
+//   });
+
 export class App extends Component {
   state = {
     array: [],
@@ -45,6 +75,11 @@ export class App extends Component {
               status: 'resolved',
             };
           });
+        } else {
+          this.setState({ status: 'idle' });
+          toast.error('Sorry, we didn`t find anything for this query', {
+            position: 'top-right',
+          });
         }
       } catch (error) {
         this.setState({
@@ -63,23 +98,31 @@ export class App extends Component {
       showModal: true,
     }));
   };
+
   onCloseModal = () => {
     this.setState(({ showModal, modalImgSrc }) => ({
       modalImgSrc: '',
       showModal: false,
     }));
   };
+
   hendlerFormSubmit = newState => {
-    this.setState(({ searchValue, page }) => ({
-      searchValue: newState.value,
-      page: newState.page,
-    }));
+    if (this.state.searchValue !== newState.value) {
+      this.setState(({ searchValue, page }) => ({
+        searchValue: newState.value,
+        array: [],
+        page: newState.page,
+        status: 'pending',
+        isLoading: true,
+      }));
+    }
   };
 
   loadMore = () => {
     this.setState(prevState => ({
       page: prevState.page + 1,
       status: 'pending',
+      isLoading: true,
     }));
   };
 
@@ -87,18 +130,31 @@ export class App extends Component {
     const { searchValue, array, isLoading, showModal, modalImgSrc, status } =
       this.state;
     console.log(status);
+    console.log(isLoading);
     if (status === 'idle') {
-      return <SearchBar onSubmit={this.hendlerFormSubmit} />;
+      return (
+        <div className={css.App}>
+          <SearchBar onSubmit={this.hendlerFormSubmit} />
+          <Toaster />
+        </div>
+      );
     }
     if (status === 'pending') {
-      <Loader visible={isLoading} />;
+      <div className={css.App}>
+        <SearchBar onSubmit={this.hendlerFormSubmit} />
+        {/* <Loader visible={isLoading} />; */}
+        {array.length > 0 && (
+          <ImageGallery data={array} clickModal={this.onOpenModal} />
+        )}
+      </div>;
     }
     if (status === 'rejected') {
       return (
-        <>
+        <div className={css.App}>
           <SearchBar onSubmit={this.hendlerFormSubmit} />
+
           <ErrorUser />
-        </>
+        </div>
       );
     }
     if (status === 'resolved') {
@@ -108,6 +164,7 @@ export class App extends Component {
           {searchValue && (
             <ImageGallery data={array} clickModal={this.onOpenModal} />
           )}
+          <Loader visible={isLoading} />;
           {searchValue && <Button loadMore={this.loadMore} />}
           {showModal && (
             <Modal onClose={this.onCloseModal}>

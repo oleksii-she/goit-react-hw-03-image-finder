@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { FaSearchMinus } from 'react-icons/fa';
 import css from './SearchBar.module.css';
-
+import toast, { Toaster } from 'react-hot-toast';
 export class SearchBar extends Component {
   state = {
     value: '',
@@ -15,7 +15,9 @@ export class SearchBar extends Component {
   handlerSubmitForm = e => {
     e.preventDefault();
     if (this.state.value === '') {
-      console.log('none value');
+      toast.error('Type something', {
+        position: 'top-right',
+      });
     }
     this.props.onSubmit(this.state);
     this.reset();
@@ -43,6 +45,7 @@ export class SearchBar extends Component {
             value={value}
             onChange={this.handlerInputName}
           />
+          <Toaster />
         </form>
       </header>
     );

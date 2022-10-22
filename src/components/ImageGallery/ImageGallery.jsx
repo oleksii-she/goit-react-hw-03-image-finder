@@ -6,7 +6,6 @@ export const ImageGallery = ({ data, clickModal }) => {
   return (
     <ul className={css.ImageGallery}>
       {data.map(({ id, webformatURL, tags, largeImageURL }) => {
-        console.log(id);
         return (
           <ImageGalleryItem
             key={id}
