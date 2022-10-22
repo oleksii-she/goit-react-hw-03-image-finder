@@ -80,7 +80,7 @@ export class App extends Component {
   };
 
   render() {
-    const { searchValue, array, isLoading, showModal, modalImgSrc, page } =
+    const { searchValue, array, isLoading, showModal, modalImgSrc } =
       this.state;
 
     return (
