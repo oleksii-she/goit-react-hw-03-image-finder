@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 
 import { pixabayApi } from './api';
 
@@ -144,7 +144,7 @@ export class App extends Component {
         {array.length > 1 && <Button loadMore={this.loadMore} />}
         {showModal && (
           <Modal onClose={this.onCloseModal}>
-            <img src={modalImgSrc} />
+            <img src={modalImgSrc} alt="" />
           </Modal>
         )}
         {status === 'pending' && <Loader />}
