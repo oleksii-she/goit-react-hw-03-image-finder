@@ -17,9 +17,7 @@ export class App extends Component {
     array: [],
     searchValue: '',
     modalImgSrc: '',
-    // isLoading: false,
     showModal: false,
-
     page: 1,
     status: 'idle',
   };
@@ -89,7 +87,6 @@ export class App extends Component {
   loadMore = () => {
     this.setState(prevState => ({
       page: prevState.page + 1,
-      status: 'pending',
     }));
 
     if (this.state.page > 1) {
