@@ -15,7 +15,7 @@ export class SearchBar extends Component {
   handlerSubmitForm = e => {
     e.preventDefault();
     if (this.state.value === '') {
-      toast.error('Type something', {
+      return toast.error('Type something', {
         position: 'top-right',
       });
     }

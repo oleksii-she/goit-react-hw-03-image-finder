@@ -12,32 +12,6 @@ import { ErrorUser } from './Error/ErrorUser';
 
 import css from './app.module.css';
 
-/// notification
-// const notifyE = () =>
-//   toast('Hello World', {
-//     duration: 4000,
-//     position: 'top-center',
-
-//     // Styling
-//     style: {},
-//     className: '',
-
-//     // Custom Icon
-//     icon: '👏',
-
-//     // Change colors of success/error/loading icon
-//     iconTheme: {
-//       primary: '#000',
-//       secondary: '#fff',
-//     },
-
-//     // Aria
-//     ariaProps: {
-//       role: 'status',
-//       'aria-live': 'polite',
-//     },
-//   });
-
 export class App extends Component {
   state = {
     array: [],
@@ -51,12 +25,6 @@ export class App extends Component {
   };
 
   async componentDidUpdate(prevProps, prevState) {
-    if (this.state.page > 1) {
-      window.scrollTo({
-        top: document.documentElement.scrollHeight,
-        behavior: 'smooth',
-      });
-    }
     if (
       prevState.searchValue !== this.state.searchValue ||
       prevState.page !== this.state.page
@@ -77,9 +45,12 @@ export class App extends Component {
           });
         } else {
           this.setState({ status: 'idle' });
-          toast.error('Sorry, we didn`t find anything for this query', {
-            position: 'top-right',
-          });
+          return toast.error(
+            'Sorry, there are no more images for this request',
+            {
+              position: 'top-right',
+            }
+          );
         }
       } catch (error) {
         this.setState({
@@ -113,7 +84,6 @@ export class App extends Component {
         array: [],
         page: newState.page,
         status: 'pending',
-        isLoading: true,
       }));
     }
   };
@@ -122,27 +92,37 @@ export class App extends Component {
     this.setState(prevState => ({
       page: prevState.page + 1,
       status: 'pending',
-      isLoading: true,
     }));
+
+    if (this.state.page > 1) {
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
   };
 
   render() {
     const { searchValue, array, isLoading, showModal, modalImgSrc, status } =
       this.state;
     console.log(status);
-    console.log(isLoading);
+
     if (status === 'idle') {
       return (
         <div className={css.App}>
           <SearchBar onSubmit={this.hendlerFormSubmit} />
           <Toaster />
+          {array.length > 0 && (
+            <ImageGallery data={array} clickModal={this.onOpenModal} />
+          )}
         </div>
       );
     }
     if (status === 'pending') {
+      console.log(isLoading);
       <div className={css.App}>
         <SearchBar onSubmit={this.hendlerFormSubmit} />
-        {/* <Loader visible={isLoading} />; */}
+        {isLoading && <Loader visible={isLoading} />}
         {array.length > 0 && (
           <ImageGallery data={array} clickModal={this.onOpenModal} />
         )}
@@ -152,7 +132,6 @@ export class App extends Component {
       return (
         <div className={css.App}>
           <SearchBar onSubmit={this.hendlerFormSubmit} />
-
           <ErrorUser />
         </div>
       );
@@ -164,7 +143,6 @@ export class App extends Component {
           {searchValue && (
             <ImageGallery data={array} clickModal={this.onOpenModal} />
           )}
-          <Loader visible={isLoading} />;
           {searchValue && <Button loadMore={this.loadMore} />}
           {showModal && (
             <Modal onClose={this.onCloseModal}>

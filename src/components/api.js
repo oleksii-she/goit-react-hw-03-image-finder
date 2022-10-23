@@ -12,15 +12,3 @@ export const pixabayApi = async (searchValue, page) => {
 
   return responce.data.hits;
 };
-
-// export const fetchBreeds = async () => {
-//   const response = await axios.get('/breeds');
-//   return response.data;
-// };
-
-// export const fetchDogByBreed = async (breedId) => {
-//   const response = await axios.get('/images/search', {
-//     params: { breed_id: breedId },
-//   });
-//   return response.data[0];
-// };
