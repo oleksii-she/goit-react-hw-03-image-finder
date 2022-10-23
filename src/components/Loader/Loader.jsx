@@ -1,7 +1,7 @@
 import { ThreeDots } from 'react-loader-spinner';
 import css from './Loader.module.css';
 
-export const Loader = ({ visible }) => {
+export const Loader = () => {
   return (
     <div className={css.loader_box}>
       <ThreeDots
@@ -12,7 +12,7 @@ export const Loader = ({ visible }) => {
         ariaLabel="three-dots-loading"
         wrapperStyle={{}}
         wrapperClassName=""
-        visible={visible}
+        visible={true}
       />
     </div>
   );

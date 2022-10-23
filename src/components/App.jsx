@@ -17,7 +17,7 @@ export class App extends Component {
     array: [],
     searchValue: '',
     modalImgSrc: '',
-    isLoading: false,
+    // isLoading: false,
     showModal: false,
 
     page: 1,
@@ -30,7 +30,7 @@ export class App extends Component {
       prevState.page !== this.state.page
     ) {
       try {
-        this.setState({ isLoading: true });
+        this.setState({ status: 'pending' });
         const arrayObj = await pixabayApi(
           this.state.searchValue,
           this.state.page
@@ -44,20 +44,17 @@ export class App extends Component {
             };
           });
         } else {
-          this.setState({ status: 'idle' });
-          return toast.error(
-            'Sorry, there are no more images for this request',
-            {
-              position: 'top-right',
-            }
+          toast.error(
+            `Sorry, but nothing was found for your query ${this.state.searchValue}`,
+            { position: 'top-right' }
           );
+          this.setState({ status: 'idle' });
+          return;
         }
       } catch (error) {
         this.setState({
           status: 'rejected',
         });
-      } finally {
-        this.setState({ isLoading: false });
       }
     }
   }
@@ -82,9 +79,10 @@ export class App extends Component {
       this.setState(({ searchValue, page }) => ({
         searchValue: newState.value,
         array: [],
-        page: newState.page,
-        status: 'pending',
+        page: 1,
       }));
+    } else {
+      return;
     }
   };
 
@@ -103,31 +101,20 @@ export class App extends Component {
   };
 
   render() {
-    const { searchValue, array, isLoading, showModal, modalImgSrc, status } =
-      this.state;
-    console.log(status);
-
-    if (status === 'idle') {
-      return (
-        <div className={css.App}>
-          <SearchBar onSubmit={this.hendlerFormSubmit} />
-          <Toaster />
-          {array.length > 0 && (
-            <ImageGallery data={array} clickModal={this.onOpenModal} />
-          )}
-        </div>
-      );
-    }
-    if (status === 'pending') {
-      console.log(isLoading);
-      <div className={css.App}>
-        <SearchBar onSubmit={this.hendlerFormSubmit} />
-        {isLoading && <Loader visible={isLoading} />}
-        {array.length > 0 && (
-          <ImageGallery data={array} clickModal={this.onOpenModal} />
-        )}
-      </div>;
-    }
+    const { searchValue, array, showModal, modalImgSrc, status } = this.state;
+    // if (status === 'idle') {
+    //   return (
+    //     <div className={css.App}>
+    //       <SearchBar onSubmit={this.hendlerFormSubmit} />
+    //     </div>
+    //   );
+    // }
+    // if (status === 'pending') {
+    //   <div className={css.App}>
+    //     <SearchBar onSubmit={this.hendlerFormSubmit} />
+    //     <Loader />
+    //   </div>;
+    // }
     if (status === 'rejected') {
       return (
         <div className={css.App}>
@@ -136,23 +123,35 @@ export class App extends Component {
         </div>
       );
     }
-    if (status === 'resolved') {
-      return (
-        <div className={css.App}>
-          <SearchBar onSubmit={this.hendlerFormSubmit} />
-          {searchValue && (
-            <ImageGallery data={array} clickModal={this.onOpenModal} />
-          )}
-          {searchValue && <Button loadMore={this.loadMore} />}
-          {showModal && (
-            <Modal onClose={this.onCloseModal}>
-              <img src={modalImgSrc} alt="" />
-            </Modal>
-          )}
-        </div>
-      );
-    }
+    // if (status === 'resolved') {
+    //   return (
+    //     <div className={css.App}>
+    //       <SearchBar onSubmit={this.hendlerFormSubmit} />
+    //       <ImageGallery data={array} clickModal={this.onOpenModal} />
+    //       <Button loadMore={this.loadMore} />
+    //       {showModal && (
+    //         <Modal onClose={this.onCloseModal}>
+    //           <img src={modalImgSrc} alt="" />
+    //         </Modal>
+    //       )}
+    //     </div>
+    //   );
+    // }
+
+    return (
+      <div className={css.App}>
+        <SearchBar onSubmit={this.hendlerFormSubmit} />
+        {searchValue && (
+          <ImageGallery data={array} clickModal={this.onOpenModal} />
+        )}
+        {array.length > 1 && <Button loadMore={this.loadMore} />}
+        {showModal && (
+          <Modal onClose={this.onCloseModal}>
+            <img src={modalImgSrc} />
+          </Modal>
+        )}
+        {status === 'pending' && <Loader />}
+      </div>
+    );
   }
 }
-
-// resolved pending idle' rejected

@@ -14,10 +14,11 @@ export class SearchBar extends Component {
 
   handlerSubmitForm = e => {
     e.preventDefault();
-    if (this.state.value === '') {
-      return toast.error('Type something', {
+    if (this.state.value.trim() === '') {
+      toast.error('Type something', {
         position: 'top-right',
       });
+      return;
     }
     this.props.onSubmit(this.state);
     this.reset();
