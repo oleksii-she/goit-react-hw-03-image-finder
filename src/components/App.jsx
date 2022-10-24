@@ -20,6 +20,7 @@ export class App extends Component {
     showModal: false,
     page: 1,
     status: 'idle',
+    hidden: false,
   };
 
   async componentDidUpdate(prevProps, prevState) {
@@ -34,10 +35,11 @@ export class App extends Component {
           this.state.page
         );
 
-        if (arrayObj.length > 0) {
+        console.log(arrayObj);
+        if (arrayObj.hits.length > 0) {
           this.setState(prevState => {
             return {
-              array: [...prevState.array, ...arrayObj],
+              array: [...prevState.array, ...arrayObj.hits],
               status: 'resolved',
             };
           });
@@ -48,6 +50,23 @@ export class App extends Component {
           );
           this.setState({ status: 'idle' });
           return;
+        }
+
+        if (Math.round(arrayObj.totalHits / 12) < this.state.page) {
+          toast.error(
+            `We are sorry, but you have reached the end of search results`,
+            { position: 'top-right' }
+          );
+
+          this.setState({
+            hidden: false,
+          });
+        }
+
+        if (arrayObj.hits.length > 11) {
+          this.setState({
+            hidden: true,
+          });
         }
       } catch (error) {
         this.setState({
@@ -79,8 +98,6 @@ export class App extends Component {
         array: [],
         page: 1,
       }));
-    } else {
-      return;
     }
   };
 
@@ -98,20 +115,9 @@ export class App extends Component {
   };
 
   render() {
-    const { searchValue, array, showModal, modalImgSrc, status } = this.state;
-    // if (status === 'idle') {
-    //   return (
-    //     <div className={css.App}>
-    //       <SearchBar onSubmit={this.hendlerFormSubmit} />
-    //     </div>
-    //   );
-    // }
-    // if (status === 'pending') {
-    //   <div className={css.App}>
-    //     <SearchBar onSubmit={this.hendlerFormSubmit} />
-    //     <Loader />
-    //   </div>;
-    // }
+    const { searchValue, array, showModal, modalImgSrc, status, hidden } =
+      this.state;
+
     if (status === 'rejected') {
       return (
         <div className={css.App}>
@@ -120,20 +126,6 @@ export class App extends Component {
         </div>
       );
     }
-    // if (status === 'resolved') {
-    //   return (
-    //     <div className={css.App}>
-    //       <SearchBar onSubmit={this.hendlerFormSubmit} />
-    //       <ImageGallery data={array} clickModal={this.onOpenModal} />
-    //       <Button loadMore={this.loadMore} />
-    //       {showModal && (
-    //         <Modal onClose={this.onCloseModal}>
-    //           <img src={modalImgSrc} alt="" />
-    //         </Modal>
-    //       )}
-    //     </div>
-    //   );
-    // }
 
     return (
       <div className={css.App}>
@@ -141,7 +133,7 @@ export class App extends Component {
         {searchValue && (
           <ImageGallery data={array} clickModal={this.onOpenModal} />
         )}
-        {array.length > 1 && <Button loadMore={this.loadMore} />}
+        {hidden === true && <Button loadMore={this.loadMore} />}
         {showModal && (
           <Modal onClose={this.onCloseModal}>
             <img src={modalImgSrc} alt="" />

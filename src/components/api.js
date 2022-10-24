@@ -10,5 +10,5 @@ export const pixabayApi = async (searchValue, page) => {
     },
   });
 
-  return responce.data.hits;
+  return responce.data;
 };
